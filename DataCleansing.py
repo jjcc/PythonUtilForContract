@@ -2,7 +2,7 @@ import pandas as pd
 
 datafile = "Data//updated_sharepoint.xlsm"
 
-FIELDS_SPECL_CHR = ['Collection Type','Data Steward Email']
+FIELDS_SPECL_CHR = [('Collection Type',r'\d+;#'),('Data Steward Email',r';#\d+')]
 #Audience
 
 def remove_special_character(df,field,regex):
@@ -21,8 +21,10 @@ def remove_special_character(df,field,regex):
 def main():
     df = pd.read_excel(datafile)
 
-    for f in FIELDS_SPECL_CHR:
-        df = remove_special_character(df,f,r';#\d+')
+    for fr in FIELDS_SPECL_CHR:
+        f = fr[0]
+        r = fr[1]
+        df = remove_special_character(df,f,r)
 
 
     df.to_excel("Data//new_updated_sp.xlsx")
