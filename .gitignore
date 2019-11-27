@@ -1,0 +1,10 @@
+/Data/
+
+*.yaml
+
+# Environments
+.env
+.venv
+env/
+venv/
+
