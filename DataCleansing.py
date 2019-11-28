@@ -2,6 +2,8 @@ import pandas as pd
 import json
 import numpy as np
 
+
+
 datafile = "Data//updated_sharepoint.xlsm"
 
 FIELDS_SPECL_CHR = [('Collection Type', r'\d+;#'), ('Data Steward Email', r';#\d+'),
@@ -32,15 +34,15 @@ def main():
         r = fr[1]
         df = remove_special_character(df, f, r)
 
-    # df.to_excel("Data//new_updated_sp.xlsx")
     schema = load_schema("Data//schema.json")
     generated_dic = gen_json(schema, df)
 
     with open("Data//dumped_data.json", "w") as ofp:
         json.dump(generated_dic, ofp)
 
-    with open("Data//dumped_data_asc.json", "w",encoding="cp1252") as ofp:
-        json.dump(generated_dic, ofp, ensure_ascii=False)
+    # For generate raw encoded data
+    # with open("Data//dumped_data_asc.json", "w",encoding="cp1252") as ofp:
+    #     json.dump(generated_dic, ofp, ensure_ascii=False)
 
     pass
 
@@ -52,7 +54,22 @@ def load_schema(file):
     return sch
 
 
+def process(data_value, case):
+    """
+    For processing data to generate specific json case by case
+    :param data_value:
+    :param case:
+    :return:
+    """
+    pass
+
 def gen_json(schema, data_frame):
+    """
+    Generate data as dictionary so it can be dumped to json string or a file
+    :param schema:
+    :param data_frame:
+    :return:
+    """
     res = []
 
     for i in range(10):
@@ -61,9 +78,11 @@ def gen_json(schema, data_frame):
         item = {}
         for k, v in schema.items():
             value = row[v['col']]
-            # if k == "publication_year":
-            #     print(f'{value}')
-            #     pass
+            # if k == "keywords":
+            #    value = process(value, "kw")
+            if k.startswith("official_lang"):
+                   value = str(value).lower()
+
             if 'multi' in v:
                 value = value.split(",")
             if value is np.nan:
@@ -71,7 +90,7 @@ def gen_json(schema, data_frame):
             if value is pd.NaT:
                 value = ""
             if isinstance(value, np.bool_):
-                value = bool(value)
+                value = str(bool(value)).lower()
             if isinstance(value, pd.Timestamp):
                 value = value.strftime('%Y-%m-%d %H:%M:%S')
             # if isinstance(value, np.nan):
